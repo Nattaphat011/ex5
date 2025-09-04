@@ -1,246 +1,69 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Life Goal Setting</title>
-
-<!-- Font Awesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<style>
-  body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg,#6a11cb,#2575fc); margin:0; padding:20px; color:#333; }
-  h1, h2 { color:#fff; margin-bottom:10px; }
-  .container { max-width: 900px; margin:auto; background:#fff; padding:20px; border-radius:12px; box-shadow:0 8px 20px rgba(0,0,0,0.2);}
-  input, select, textarea, button { padding:8px; font-size:14px; margin-top:6px; width:100%; box-sizing:border-box; border-radius:6px; border:1px solid #ccc; }
-  textarea { resize: vertical; }
-  button { cursor:pointer; background:#2575fc; color:#fff; border:none; transition:0.3s; display:flex; align-items:center; gap:6px; justify-content:center; }
-  button:hover { background:#1a5bcc; }
-  .row { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
-  .col { flex:1; min-width:120px; }
-  .card { border:1px solid #ccc; border-radius:8px; padding:12px; background:#f9f9f9; margin-top:10px; }
-  .mini-item { margin-top:6px; background:#eef0ff; padding:6px 8px; border-radius:6px; display:flex; justify-content:space-between; align-items:center; }
-  #status { margin-top:10px; font-weight:bold; }
-  .muted { color:#555; }
-  .success { color:green; }
-  .error { color:red; }
-  input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-
-  /* Responsive */
-  @media (max-width:600px){
-    .row { flex-direction:column; }
-  }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Goal Setting — การตั้งเป้าหมายชีวิต</title>
+  <style>
+    body { font-family: "Tahoma", sans-serif; background: #f3f8f6; color: #234; padding: 20px; }
+    h1, h2 { color: #2c5; }
+    form { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
+    label { display: block; margin-top: 12px; }
+    input, textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; }
+    button { margin-top: 15px; padding: 10px 20px; background: #28a745; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { background: #218838; }
+    .tip { margin-top: 10px; font-style: italic; color: #444; }
+  </style>
 </head>
 <body>
+  <h1>Life Goal Setting</h1>
+  <p>✨ ตั้งเป้าหมายใหญ่ภายใน 1 ปี → แบ่งเป็นเป้าหมายเล็ก → ติดตามผลทุกเดือน ✨</p>
 
-<div class="container">
-  <h1><i class="fa-solid fa-bullseye"></i> Life Goal Setting</h1>
+  <form id="goalForm">
+    <h2>1. เป้าหมายใหญ่ของคุณ</h2>
+    <label>เป้าหมายหลักของฉันภายใน 1 ปีคือ:</label>
+    <input type="text" name="goal_main" required placeholder="เช่น อยากเรียนภาษาอังกฤษให้ได้ 500 คำ">
 
-  <h2><i class="fa-solid fa-flag-checkered"></i> เป้าหมายใหญ่ของฉันใน 1 ปี</h2>
-  <textarea id="bigGoal" placeholder="เช่น: อยากเรียนภาษาอังกฤษให้ได้ 500 คำ"></textarea>
+    <h2>2. เป้าหมายย่อยรายเดือน</h2>
+    <label>เดือนนี้ฉันจะทำอะไรให้สำเร็จ:</label>
+    <input type="text" name="goal_monthly" required placeholder="เช่น เรียนภาษาอังกฤษ 50 คำ">
 
-  <h2><i class="fa-solid fa-list-check"></i> เป้าหมายย่อย</h2>
-  <input type="text" id="miniInput" placeholder="พิมพ์เป้าหมายย่อยแล้วกดเพิ่ม">
-  <button type="button" onclick="addMiniGoal()"><i class="fa-solid fa-plus"></i> เพิ่มเป้าหมายย่อย</button>
-  <div id="miniList"></div>
+    <h2>3. ติดตามผลรายเดือน</h2>
+    <label>เดือนนี้สำเร็จหรือไม่:</label>
+    <select name="success" required>
+      <option value="ใช่">✅ ใช่</option>
+      <option value="ไม่ใช่">❌ ไม่ใช่</option>
+    </select>
 
-  <h2><i class="fa-solid fa-calendar-days"></i> จำนวนเดือนติดตาม</h2>
-  <input type="number" id="numMonths" value="12" min="1" max="24" onchange="renderMonths()">
-  <div id="monthsContainer"></div>
+    <label>คะแนนความก้าวหน้า (0–100%):</label>
+    <input type="number" name="progress_score" min="0" max="100" required oninput="showTip(this.value)">
+    <p class="tip" id="tip"></p>
 
-  <h2><i class="fa-solid fa-star"></i> คะแนนและการปรับแผน</h2>
-  <input type="number" id="overallScore" placeholder="กรอกคะแนนรวม 0-100">
-  <input type="text" id="adjustPlan" placeholder="ถ้าต้องปรับแผน ทำอย่างไร">
+    <label>ถ้าไม่สำเร็จ ฉันจะปรับแผนโดย:</label>
+    <textarea name="adjust_plan" rows="3" placeholder="เช่น จะลดเป้าหมายเหลือ 30 คำ"></textarea>
 
-  <button type="button" onclick="submitForm()"><i class="fa-solid fa-paper-plane"></i> บันทึกและส่งข้อมูล</button>
+    <button type="submit">บันทึกเป้าหมาย</button>
+  </form>
 
-  <div id="status" class="muted"></div>
-  <div id="advice"></div>
-</div>
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzgJH9BbXrKbEQRGQrE8XPu6Y2nxmXGHvJ8eKMpkSdrj_IOBcIpVJ0gI1jLz8FsqXK5/exec";
 
-<script>
-/* --- GAS Web App URL ฝังไว้ --- */
-const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcNbbU2NjNP_kh5tODlxm3N16qDiUXmBsQN59WN3j7DKn_WdTRBTTKI1ay2fzjtH0R/exec"; // <-- แก้เป็น URL ของคุณ
+    const form = document.getElementById("goalForm");
+    const tip = document.getElementById("tip");
 
-document.addEventListener('DOMContentLoaded', () => {
-  renderMonths();
-  const saved = localStorage.getItem('lgs-settings');
-  if (saved) {
-    try {
-      const s = JSON.parse(saved);
-      const big = s.bigGoal || '';
-      if (big) document.getElementById('bigGoal').value = big;
-      (s.miniGoals || []).forEach(m => { document.getElementById('miniInput').value = m; addMiniGoal(); });
-      document.getElementById('numMonths').value = s.monthsCount || 12;
-      renderMonths();
-      if (s.monthData) {
-        Object.entries(s.monthData).forEach(([i, data]) => {
-          const idx = Number(i);
-          const completeEl = document.getElementById(`month-complete-${idx}`);
-          const percentEl = document.getElementById(`month-percent-${idx}`);
-          const adjustEl = document.getElementById(`month-adjust-${idx}`);
-          if (completeEl) completeEl.value = data.complete ? 'yes' : 'no';
-          if (percentEl) percentEl.value = data.percent || 0;
-          if (adjustEl) adjustEl.value = data.adjust || '';
-        });
-      }
-    } catch(e){ console.warn(e); }
-  }
-});
-
-function renderMonths() {
-  const container = document.getElementById('monthsContainer');
-  container.innerHTML = '';
-  const n = Math.max(1, Math.min(24, Number(document.getElementById('numMonths').value || 12)));
-  for (let i = 1; i <= n; i++) {
-    const div = document.createElement('div'); 
-    div.className = 'card';
-    div.innerHTML = `
-      <strong>เดือนที่ ${i}</strong>
-      <div class="row">
-        <div class="col">
-          <label>สำเร็จหรือไม่</label>
-          <select id="month-complete-${i}"><option value="yes">ใช่</option><option value="no">ไม่ใช่</option></select>
-        </div>
-        <div class="col">
-          <label>ความคืบหน้า (0-100)</label>
-          <input id="month-percent-${i}" type="number" min="0" max="100" value="0">
-        </div>
-      </div>
-      <div style="margin-top:8px">
-        <label>ถ้าไม่สำเร็จ ฉันจะปรับแผนโดย:</label>
-        <input id="month-adjust-${i}" type="text" placeholder="เช่น: ลดเป้าหมายลงเป็น 30 คำ/เดือน หรือฝึกทุกวันอาทิตย์">
-      </div>`;
-    container.appendChild(div);
-  }
-}
-
-function addMiniGoal() {
-  const val = document.getElementById('miniInput').value.trim();
-  if (!val) return;
-  const list = document.getElementById('miniList');
-  const idx = list.children.length + 1;
-  const item = document.createElement('div'); 
-  item.className = 'mini-item';
-  item.innerHTML = `<strong>เป้าหมายย่อย ${idx}:</strong> <span class="muted">${escapeHtml(val)}</span> 
-                    <button type="button" onclick="this.parentElement.remove();"><i class="fa-solid fa-trash"></i></button>`;
-  list.appendChild(item);
-  document.getElementById('miniInput').value = '';
-}
-
-function collectForm() {
-  const bigGoal = document.getElementById('bigGoal').value.trim();
-  const miniGoals = [...document.getElementById('miniList').children].map(el => el.querySelector('span').innerText);
-  const months = {};
-  const n = Math.max(1, Math.min(24, Number(document.getElementById('numMonths').value || 12)));
-  for (let i=1; i<=n; i++) {
-    months[i] = {
-      complete: document.getElementById(`month-complete-${i}`).value === 'yes',
-      percent: Number(document.getElementById(`month-percent-${i}`).value) || 0,
-      adjust: document.getElementById(`month-adjust-${i}`).value || ''
-    };
-  }
-  return {
-    bigGoal,
-    miniGoals,
-    months,
-    overallScore: Number(document.getElementById('overallScore').value) || 0,
-    adjustPlan: document.getElementById('adjustPlan').value || '',
-    submittedAt: new Date().toISOString()
-  };
-}
-
-async function submitForm(e) {
-  e?.preventDefault();
-  const data = collectForm();
-  localStorage.setItem('lgs-settings', JSON.stringify({
-    bigGoal: data.bigGoal,
-    miniGoals: data.miniGoals,
-    monthsCount: document.getElementById('numMonths').value,
-    monthData: data.months
-  }));
-
-  document.getElementById('advice').innerHTML = generateAdvice(data.overallScore);
-
-  showStatus('กำลังส่งข้อมูลไปยัง GAS...');
-  try {
-    const response = await fetch(GAS_WEB_APP_URL, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
-    });
-    const respJson = await response.json();
-    showStatus('ส่งข้อมูลเรียบร้อย', true);
-    console.log('GAS response:', respJson);
-  } catch(err){
-    console.error('GAS fetch error:', err);
-    showStatus('ส่งข้อมูลล้มเหลว — บันทึกไว้ในเครื่องแทน', false, true);
-  }
-}
-
-function showStatus(msg, success=true, isError=false){
-  const s = document.getElementById('status'); s.innerText=msg;
-  s.className = isError?'error':'muted'; if(success) s.classList.add('success');
-  setTimeout(()=>{ if(s) s.innerText=''; }, 6000);
-}
-
-function generateAdvice(score){
-  const n = Number(score || 0);
-  if(n>=80) return `<div class="card"><strong>คะแนน: ${n}% — เยี่ยมมาก!</strong><div class="muted">คุณกำลังเดินตามแผนได้ดี ลองให้รางวัลเล็ก ๆ กับตัวเองดูนะ</div></div>`;
-  if(n>=50) return `<div class="card"><strong>คะแนน: ${n}% — ทำได้ดี</strong><div class="muted">ลองปรับแผนเล็กน้อยเพื่อให้ทำต่อเนื่องมากขึ้น</div></div>`;
-  return `<div class="card"><strong>คะแนน: ${n}% — อย่าท้อใจ</strong><div class="muted">การวางเป้าหมายใหม่และปรับตามสถานการณ์เป็นเรื่องปกติ คุณยังเริ่มใหม่ได้เสมอ</div></div>`;
-}
-
-function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-</script>
-
-
-
-
-  <!--
-  -------------------------------
-  GOOGLE APPS SCRIPT (GAS) CODE
-  -------------------------------
-  Paste the following code into a new Google Apps Script project (File > New > Script). Then update the SHEET_ID constant (server-side only) to the Sheet you want to write to. Deploy > New deployment > Select type: Web app > Access: Anyone (even anonymous) if you want public posting.
-
-  IMPORTANT: Keep the SHEET_ID only inside GAS. Do NOT put it into the HTML.
-
-  ---------- GAS CODE (JavaScript) ----------
-  */
-  // /** GAS code starts here (copy everything between the next comment and the end) */
-  /*
-  const SHEET_ID = 'PASTE_YOUR_SHEET_ID_HERE'; // <-- set this to your Google Sheet ID (server-side)
-  const SHEET_NAME = 'Submissions';
-
-  function doGet(e){
-    // simple healthcheck
-    return ContentService.createTextOutput(JSON.stringify({message:'GAS OK'})).setMimeType(ContentService.MimeType.JSON);
-  }
-
-  function doPost(e){
-    try{
-      const payload = JSON.parse(e.postData.contents);
-      const ss = SpreadsheetApp.openById(SHEET_ID);
-      let sheet = ss.getSheetByName(SHEET_NAME);
-      if(!sheet) sheet = ss.insertSheet(SHEET_NAME);
-      // header row if empty
-      if(sheet.getLastRow() === 0){
-        sheet.appendRow(['submittedAt','bigGoal','miniGoals_JSON','overallScore','adjustPlan','monthIndex','month_complete','month_percent','month_adjust']);
-      }
-      // Add one row per month for easy analysis
-      const months = payload.months || {};
-      const base = [payload.submittedAt || new Date().toISOString(), payload.bigGoal || '', JSON.stringify(payload.miniGoals||[]), payload.overallScore || 0, payload.adjustPlan || ''];
-      const rows = [];
-      for(const idx in months){
-        const m = months[idx];
-        rows.push(base.concat([idx, m.complete? 'yes':'no', m.percent||0, m.adjust||'']));
-      }
-      if(rows.length > 0) sheet.getRange(sheet.getLastRow()+1,1,rows.length, rows[0].length).setValues(rows);
-      return ContentService.createTextOutput(JSON.stringify({status:'ok', inserted: rows.length})).setMimeType(ContentService.MimeType.JSON);
-    }catch(err){
-      return ContentService.createTextOutput(JSON.stringify({status:'error', message: err.message})).setMimeType(ContentService.MimeType.JSON);
+    function showTip(score) {
+      score = Number(score);
+      if (score >= 80) tip.textContent = "เยี่ยมมาก! คุณกำลังเดินตามแผนได้ดี ลองให้รางวัลเล็ก ๆ กับตัวเองดูนะ 🎉";
+      else if (score >= 50) tip.textContent = "คุณทำได้ดี 👍 ลองปรับแผนเล็กน้อยเพื่อทำต่อเนื่องมากขึ้น";
+      else tip.textContent = "อย่าท้อใจ 💪 การวางเป้าหมายใหม่เป็นเรื่องปกติ คุณยังเริ่มใหม่ได้เสมอ";
     }
-  }
-  */
--->
+
+    form.addEventListener("submit", e => {
+      e.preventDefault();
+      fetch(scriptURL, { method: "POST", body: new FormData(form)})
+        .then(() => alert("✅ บันทึกสำเร็จ!"))
+        .catch(err => alert("❌ เกิดข้อผิดพลาด: " + err));
+    });
+  </script>
 </body>
-</html> 
+</html>
