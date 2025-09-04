@@ -113,167 +113,188 @@ Important: This HTML does NOT contain any Google Sheet ID. The Sheet ID is store
   </div>
 
   <script>
-    // --- CONFIG ---
-    // The HTML should NOT contain any Google Sheet ID. The GAS web app holds the sheet ID.
-    let GAS_WEB_APP_URL = '';
+  let GAS_WEB_APP_URL = '';
 
-    // load saved settings
-    document.addEventListener('DOMContentLoaded', ()=>{
-      renderMonths();
-      const saved = localStorage.getItem('lgs-settings');
-      if(saved){
-        try{
-          const s = JSON.parse(saved);
-          document.getElementById('gasUrl').value = s.gasUrl || '';
-          GAS_WEB_APP_URL = s.gasUrl || '';
-          const big = s.bigGoal || '';
-          if(big) document.getElementById('bigGoal').value = big;
-          const minis = s.miniGoals || [];
-          minis.forEach(m=>{
-            document.getElementById('miniInput').value = m; addMiniGoal();
+  document.addEventListener('DOMContentLoaded', () => {
+    renderMonths();
+    const saved = localStorage.getItem('lgs-settings');
+    if (saved) {
+      try {
+        const s = JSON.parse(saved);
+        document.getElementById('gasUrl').value = s.gasUrl || '';
+        GAS_WEB_APP_URL = s.gasUrl || '';
+        const big = s.bigGoal || '';
+        if (big) document.getElementById('bigGoal').value = big;
+        (s.miniGoals || []).forEach(m => {
+          document.getElementById('miniInput').value = m; 
+          addMiniGoal();
+        });
+        document.getElementById('numMonths').value = s.monthsCount || 12;
+        renderMonths();
+        if (s.monthData) {
+          Object.entries(s.monthData).forEach(([i, data]) => {
+            const idx = Number(i);
+            const completeEl = document.getElementById(`month-complete-${idx}`);
+            const percentEl = document.getElementById(`month-percent-${idx}`);
+            const adjustEl = document.getElementById(`month-adjust-${idx}`);
+            if (completeEl) completeEl.value = data.complete ? 'yes' : 'no';
+            if (percentEl) percentEl.value = data.percent || 0;
+            if (adjustEl) adjustEl.value = data.adjust || '';
           });
-          const months = s.monthsCount || 12;
-          document.getElementById('numMonths').value = months;
-          renderMonths();
-          if(s.monthData){
-            for(const [i,data] of Object.entries(s.monthData)){
-              const idx = Number(i);
-              if(document.getElementById('month-complete-'+idx)){
-                document.getElementById('month-complete-'+idx).value = data.complete? 'yes':'no';
-                document.getElementById('month-percent-'+idx).value = data.percent||0;
-                document.getElementById('month-adjust-'+idx).value = data.adjust||'';
-              }
-            }
-          }
-        }catch(e){console.warn(e)}
-      }
-    });
-
-    function renderMonths(){
-      const container = document.getElementById('monthsContainer');
-      container.innerHTML = '';
-      const n = Math.max(1, Math.min(24, Number(document.getElementById('numMonths').value || 12)));
-      for(let i=1;i<=n;i++){
-        const div = document.createElement('div'); div.className='card'; div.style.marginTop='8px';
-        div.innerHTML = `
-          <strong>เดือนที่ ${i}</strong>
-          <div class="row" style="margin-top:6px">
-            <div class="col">
-              <label>สำเร็จหรือไม่</label>
-              <select id="month-complete-${i}"><option value="yes">ใช่</option><option value="no">ไม่ใช่</option></select>
-            </div>
-            <div class="col">
-              <label>ความคืบหน้า (0-100)</label>
-              <input id="month-percent-${i}" type="number" min="0" max="100" value="0">
-            </div>
-          </div>
-          <div style="margin-top:8px">
-            <label>ถ้าไม่สำเร็จ ฉันจะปรับแผนโดย:</label>
-            <input id="month-adjust-${i}" type="text" placeholder="เช่น: ลดเป้าหมายลงเป็น 30 คำ/เดือน หรือฝึกทุกวันอาทิตย์">
-          </div>
-        `;
-        container.appendChild(div);
-      }
-    }
-
-    function addMiniGoal(){
-      const val = document.getElementById('miniInput').value.trim();
-      if(!val) return;
-      const list = document.getElementById('miniList');
-      const idx = list.children.length + 1;
-      const item = document.createElement('div'); item.className='mini-item';
-      item.innerHTML = `<strong>เป้าหมายย่อย ${idx}:</strong> <span class="muted">${escapeHtml(val)}</span> <button type="button" style="float:right" onclick="this.parentElement.remove();">ลบ</button>`;
-      list.appendChild(item);
-      document.getElementById('miniInput').value = '';
-    }
-
-    function collectForm(){
-      const bigGoal = document.getElementById('bigGoal').value.trim();
-      const miniEls = [...document.getElementById('miniList').children];
-      const miniGoals = miniEls.map(el=>el.querySelector('span').innerText);
-      const months = {};
-      const n = Math.max(1, Math.min(24, Number(document.getElementById('numMonths').value || 12)));
-      for(let i=1;i<=n;i++){
-        months[i] = {
-          complete: document.getElementById('month-complete-'+i).value === 'yes',
-          percent: Number(document.getElementById('month-percent-'+i).value) || 0,
-          adjust: document.getElementById('month-adjust-'+i).value || ''
         }
+      } catch (e) {
+        console.warn(e);
       }
-      const overallScore = Number(document.getElementById('overallScore').value) || 0;
-      const adjustPlan = document.getElementById('adjustPlan').value || '';
-
-      return {bigGoal, miniGoals, months, overallScore, adjustPlan, submittedAt: new Date().toISOString()};
     }
+  });
 
-    function submitForm(e){
-      e && e.preventDefault && e.preventDefault();
-      const data = collectForm();
-      // save local settings
-      const settings = {gasUrl: document.getElementById('gasUrl').value.trim(), bigGoal: data.bigGoal, miniGoals: data.miniGoals, monthsCount: document.getElementById('numMonths').value, monthData: data.months};
-      localStorage.setItem('lgs-settings', JSON.stringify(settings));
-      GAS_WEB_APP_URL = document.getElementById('gasUrl').value.trim();
+  function renderMonths() {
+    const container = document.getElementById('monthsContainer');
+    container.innerHTML = '';
+    const n = Math.max(1, Math.min(24, Number(document.getElementById('numMonths').value || 12)));
+    for (let i = 1; i <= n; i++) {
+      const div = document.createElement('div'); 
+      div.className = 'card'; 
+      div.style.marginTop = '8px';
+      div.innerHTML = `
+        <strong>เดือนที่ ${i}</strong>
+        <div class="row" style="margin-top:6px">
+          <div class="col">
+            <label>สำเร็จหรือไม่</label>
+            <select id="month-complete-${i}"><option value="yes">ใช่</option><option value="no">ไม่ใช่</option></select>
+          </div>
+          <div class="col">
+            <label>ความคืบหน้า (0-100)</label>
+            <input id="month-percent-${i}" type="number" min="0" max="100" value="0">
+          </div>
+        </div>
+        <div style="margin-top:8px">
+          <label>ถ้าไม่สำเร็จ ฉันจะปรับแผนโดย:</label>
+          <input id="month-adjust-${i}" type="text" placeholder="เช่น: ลดเป้าหมายลงเป็น 30 คำ/เดือน หรือฝึกทุกวันอาทิตย์">
+        </div>
+      `;
+      container.appendChild(div);
+    }
+  }
 
-      // calculate advice
-      const adviceHtml = generateAdvice(data.overallScore);
-      document.getElementById('advice').innerHTML = adviceHtml;
+  function addMiniGoal() {
+    const val = document.getElementById('miniInput').value.trim();
+    if (!val) return;
+    const list = document.getElementById('miniList');
+    const idx = list.children.length + 1;
+    const item = document.createElement('div'); 
+    item.className = 'mini-item';
+    item.innerHTML = `<strong>เป้าหมายย่อย ${idx}:</strong> <span class="muted">${escapeHtml(val)}</span> 
+                      <button type="button" style="float:right" onclick="this.parentElement.remove();">ลบ</button>`;
+    list.appendChild(item);
+    document.getElementById('miniInput').value = '';
+  }
 
-      if(GAS_WEB_APP_URL){
-        // post to GAS
-        showStatus('กำลังส่งข้อมูลไปยัง GAS...');
-        fetch(GAS_WEB_APP_URL, {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)})
-          .then(r=>r.json())
-          .then(resp=>{
-            showStatus('ส่งข้อมูลเรียบร้อย', true);
-            console.log('GAS response', resp);
-          })
-          .catch(err=>{
-            console.error(err);
-            showStatus('ส่งข้อมูลล้มเหลว — บันทึกไว้ในเครื่องแทน', false, true);
-            saveLocal();
-          });
-      } else {
+  function collectForm() {
+    const bigGoal = document.getElementById('bigGoal').value.trim();
+    const miniGoals = [...document.getElementById('miniList').children].map(el => el.querySelector('span').innerText);
+    const months = {};
+    const n = Math.max(1, Math.min(24, Number(document.getElementById('numMonths').value || 12)));
+    for (let i = 1; i <= n; i++) {
+      months[i] = {
+        complete: document.getElementById(`month-complete-${i}`).value === 'yes',
+        percent: Number(document.getElementById(`month-percent-${i}`).value) || 0,
+        adjust: document.getElementById(`month-adjust-${i}`).value || ''
+      };
+    }
+    return {
+      bigGoal,
+      miniGoals,
+      months,
+      overallScore: Number(document.getElementById('overallScore').value) || 0,
+      adjustPlan: document.getElementById('adjustPlan').value || '',
+      submittedAt: new Date().toISOString()
+    };
+  }
+
+  async function submitForm(e) {
+    e?.preventDefault();
+    const data = collectForm();
+
+    // Save local settings
+    const settings = {
+      gasUrl: document.getElementById('gasUrl').value.trim(),
+      bigGoal: data.bigGoal,
+      miniGoals: data.miniGoals,
+      monthsCount: document.getElementById('numMonths').value,
+      monthData: data.months
+    };
+    localStorage.setItem('lgs-settings', JSON.stringify(settings));
+    GAS_WEB_APP_URL = settings.gasUrl;
+
+    // Advice
+    document.getElementById('advice').innerHTML = generateAdvice(data.overallScore);
+
+    if (GAS_WEB_APP_URL) {
+      showStatus('กำลังส่งข้อมูลไปยัง GAS...');
+      try {
+        const response = await fetch(GAS_WEB_APP_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const respJson = await response.json();
+        showStatus('ส่งข้อมูลเรียบร้อย', true);
+        console.log('GAS response:', respJson);
+      } catch (err) {
+        console.error('GAS fetch error:', err);
+        showStatus('ส่งข้อมูลล้มเหลว (CORS/Permission) — บันทึกไว้ในเครื่องแทน', false, true);
         saveLocal();
-        showStatus('บันทึกไว้ที่เครื่อง (localStorage) แล้ว — ตั้งค่า GAS URL หากต้องการส่งขึ้น Google Sheets', true);
       }
-      return false;
+    } else {
+      saveLocal();
+      showStatus('บันทึกไว้ที่เครื่อง (localStorage) แล้ว — ตั้งค่า GAS URL หากต้องการส่งขึ้น Google Sheets', true);
     }
+  }
 
-    function showStatus(msg, success=true, isError=false){
-      const s = document.getElementById('status'); s.innerText = msg; s.className = isError? 'error':'muted';
-      if(success) s.classList.add('success');
-      setTimeout(()=>{ if(s) s.innerText = ''; }, 6000);
+  function showStatus(msg, success = true, isError = false) {
+    const s = document.getElementById('status');
+    s.innerText = msg;
+    s.className = isError ? 'error' : 'muted';
+    if (success) s.classList.add('success');
+    setTimeout(() => { if(s) s.innerText = ''; }, 6000);
+  }
+
+  function saveLocal() {
+    const data = collectForm();
+    const prev = JSON.parse(localStorage.getItem('lgs-submissions') || '[]');
+    prev.push(data);
+    localStorage.setItem('lgs-submissions', JSON.stringify(prev));
+    showStatus('บันทึกข้อมูลลง localStorage เรียบร้อย', true);
+  }
+
+  async function testGas() {
+    const url = document.getElementById('gasUrl').value.trim();
+    if (!url) { alert('โปรดวาง Web App URL ของ GAS ก่อน'); return; }
+    try {
+      const res = await fetch(url, { method: 'GET', mode: 'cors' });
+      const j = await res.json();
+      alert('เชื่อมต่อ GAS สำเร็จ: ' + (j.message || JSON.stringify(j)));
+      document.getElementById('gasUrl').value = url; 
+      GAS_WEB_APP_URL = url;
+    } catch (e) {
+      alert('เชื่อมต่อ GAS ไม่สำเร็จ — ตรวจสอบ CORS / Deploy เป็น Anyone (even anonymous)');
     }
+  }
 
-    function saveLocal(){
-      const data = collectForm();
-      const prev = JSON.parse(localStorage.getItem('lgs-submissions')||'[]');
-      prev.push(data);
-      localStorage.setItem('lgs-submissions', JSON.stringify(prev));
-      showStatus('บันทึกข้อมูลลง localStorage เรียบร้อย', true);
-    }
+  function generateAdvice(score) {
+    const n = Number(score || 0);
+    if (n >= 80) return `<div class="card"><strong>คะแนน: ${n}% — เยี่ยมมาก!</strong><div class="muted">คุณกำลังเดินตามแผนได้ดี ลองให้รางวัลเล็ก ๆ กับตัวเองดูนะ</div></div>`;
+    if (n >= 50) return `<div class="card"><strong>คะแนน: ${n}% — ทำได้ดี</strong><div class="muted">ลองปรับแผนเล็กน้อยเพื่อให้ทำต่อเนื่องมากขึ้น</div></div>`;
+    return `<div class="card"><strong>คะแนน: ${n}% — อย่าท้อใจ</strong><div class="muted">การวางเป้าหมายใหม่และปรับตามสถานการณ์เป็นเรื่องปกติ คุณยังเริ่มใหม่ได้เสมอ</div></div>`;
+  }
 
-    function testGas(){
-      const url = document.getElementById('gasUrl').value.trim();
-      if(!url){ alert('โปรดวาง Web App URL ของ GAS ก่อน'); return; }
-      fetch(url, {method:'GET'}).then(r=>r.json()).then(j=>{
-        alert('เชื่อมต่อ GAS สำเร็จ: ' + (j.message || JSON.stringify(j)));
-        document.getElementById('gasUrl').value = url; GAS_WEB_APP_URL = url;
-      }).catch(e=>{
-        alert('เชื่อมต่อ GAS ไม่สำเร็จ — ตรวจสอบว่าได้ Deploy เป็น "Anyone, even anonymous" หรือว่ามีปัญหา CORS/Permissions');
-      });
-    }
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
 
-    function generateAdvice(score){
-      const n = Number(score || 0);
-      if(n >= 80) return `<div class="card"><strong>คะแนน: ${n}% — เยี่ยมมาก!</strong><div class="muted">คุณกำลังเดินตามแผนได้ดี ลองให้รางวัลเล็ก ๆ กับตัวเองดูนะ</div></div>`;
-      if(n >= 50) return `<div class="card"><strong>คะแนน: ${n}% — ทำได้ดี</strong><div class="muted">ลองปรับแผนเล็กน้อยเพื่อให้ทำต่อเนื่องมากขึ้น</div></div>`;
-      return `<div class="card"><strong>คะแนน: ${n}% — อย่าท้อใจ</strong><div class="muted">การวางเป้าหมายใหม่และปรับตามสถานการณ์เป็นเรื่องปกติ คุณยังเริ่มใหม่ได้เสมอ</div></div>`;
-    }
-
-    // small helper
-    function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-  </script>
 
   <!--
   -------------------------------
