@@ -12,14 +12,13 @@
     input, textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; }
     button { margin-top: 15px; padding: 10px 20px; background: #28a745; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
     button:hover { background: #218838; }
-    .tip { margin-top: 10px; font-style: italic; color: #444; }
   </style>
 </head>
 <body>
   <h1>Life Goal Setting</h1>
   <p>✨ ตั้งเป้าหมายใหญ่ภายใน 1 ปี → แบ่งเป็นเป้าหมายเล็ก → ติดตามผลทุกเดือน ✨</p>
 
-  <form id="goalForm">
+  <form action="https://script.google.com/macros/s/AKfycbxIpmaBkDqF9rcenPiDR4S_eCB-hGSEYp2LxFf0MsH_uPYNPFKeaQaiYOQuJ8vnaxp9/exec" method="POST" target="_blank">
     <h2>1. เป้าหมายใหญ่ของคุณ</h2>
     <label>เป้าหมายหลักของฉันภายใน 1 ปีคือ:</label>
     <input type="text" name="goal_main" required placeholder="เช่น อยากเรียนภาษาอังกฤษให้ได้ 500 คำ">
@@ -36,34 +35,12 @@
     </select>
 
     <label>คะแนนความก้าวหน้า (0–100%):</label>
-    <input type="number" name="progress_score" min="0" max="100" required oninput="showTip(this.value)">
-    <p class="tip" id="tip"></p>
+    <input type="number" name="progress_score" min="0" max="100" required>
 
     <label>ถ้าไม่สำเร็จ ฉันจะปรับแผนโดย:</label>
     <textarea name="adjust_plan" rows="3" placeholder="เช่น จะลดเป้าหมายเหลือ 30 คำ"></textarea>
 
     <button type="submit">บันทึกเป้าหมาย</button>
   </form>
-
-  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzgJH9BbXrKbEQRGQrE8XPu6Y2nxmXGHvJ8eKMpkSdrj_IOBcIpVJ0gI1jLz8FsqXK5/exec";
-
-    const form = document.getElementById("goalForm");
-    const tip = document.getElementById("tip");
-
-    function showTip(score) {
-      score = Number(score);
-      if (score >= 80) tip.textContent = "เยี่ยมมาก! คุณกำลังเดินตามแผนได้ดี ลองให้รางวัลเล็ก ๆ กับตัวเองดูนะ 🎉";
-      else if (score >= 50) tip.textContent = "คุณทำได้ดี 👍 ลองปรับแผนเล็กน้อยเพื่อทำต่อเนื่องมากขึ้น";
-      else tip.textContent = "อย่าท้อใจ 💪 การวางเป้าหมายใหม่เป็นเรื่องปกติ คุณยังเริ่มใหม่ได้เสมอ";
-    }
-
-    form.addEventListener("submit", e => {
-      e.preventDefault();
-      fetch(scriptURL, { method: "POST", body: new FormData(form)})
-        .then(() => alert("✅ บันทึกสำเร็จ!"))
-        .catch(err => alert("❌ เกิดข้อผิดพลาด: " + err));
-    });
-  </script>
 </body>
 </html>
