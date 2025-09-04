@@ -5,20 +5,20 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Life Goal Setting — การตั้งเป้าหมายชีวิต</title>
   <style>
-    body { font-family: "Tahoma", sans-serif; background: #bafaff; color: #234; padding: 20px; }
-    h1, h2 { color: #2c5; }
+    body { font-family: "Tahoma", sans-serif; background: #64c1f7; color: #234; padding: 20px; }
+    h1, h2 { color: rgb(255, 187, 0); }
     form { background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin-bottom: 20px; }
     label { display: block; margin-top: 12px; }
     input, textarea, select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 6px; }
-    button { margin-top: 15px; padding: 10px 20px; background: #38ff4f; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
-    button:hover { background: #218838; }
+    button { margin-top: 15px; padding: 10px 20px; background: #ffa05c; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+    button:hover { background: #e27304; }
   </style>
 </head>
 <body>
   <h1>Life Goal Setting</h1>
   <p>✨ ตั้งเป้าหมายใหญ่ภายใน 1 ปี → แบ่งเป็นเป้าหมายเล็ก → ติดตามผลทุกเดือน ✨</p>
 
-  <form action="https://script.google.com/macros/s/AKfycbwCpW2TzkYtO1IUNn6ojpE-sOHhBAKRMLZkmlVNJ8rZQKPs71FI2qer8BpiDbKMo-Sb/exec" method="POST" target="_blank">
+  <form action="https://script.google.com/macros/s/AKfycbxNn9BrB8pff0QL7SdvY8_TMTkQAdbsl3AdPyuRFtrxOWcuT3GBr8idK4PkUN_eI46u/exec" method="POST" target="_blank">
     <h2>1. เป้าหมายใหญ่ของคุณ</h2>
     <label>เป้าหมายหลักของฉันภายใน 1 ปีคือ:</label>
     <input type="text" name="goal_main" required placeholder="เช่น อยากเรียนภาษาอังกฤษให้ได้ 500 คำ">
@@ -42,20 +42,5 @@
 
     <button type="submit">บันทึกเป้าหมาย</button>
   </form>
-  <div id="result">
-    <h2>ขอบคุณที่ตั้งเป้าหมาย!</h2>
-    <p>คุณได้บันทึกเป้าหมายของคุณเรียบร้อยแล้ว</p>
-  </div>
-  <script>
-    // JavaScript to handle form submission and show result
-    const form = document.querySelector('form');
-    const resultDiv = document.getElementById('result');
-
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      resultDiv.style.display = 'block';
-      form.reset();
-    });
-  </script>
 </body>
 </html>
