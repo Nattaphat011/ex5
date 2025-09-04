@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Life Goal Setting — บันทึกเป้าหมาย 1 ปี</title>
+  <style>
+    :root{--bg:#f6f8fb;--card:#ffffff;--accent:#1e90ff;--muted:#6b7280}
+    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,'Noto Sans',"Helvetica Neue",Arial; background:var(--bg); margin:0; padding:24px; color:#111}
+    .wrap{max-width:900px;margin:0 auto}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;font-size:1.3rem}
+    .card{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 18px rgba(15,23,42,0.06);margin-top:18px}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    textarea,input[type=text],select{width:100%;padding:10px;border-radius:8px;border:1px solid #e6e9ef;font-size:0.95rem}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .actions{display:flex;gap:8px;align-items:center;margin-top:12px}
+    button{background:var(--accent);border:none;color:white;padding:10px 14px;border-radius:10px;cursor:pointer}
+    button.secondary{background:#f3f4f6;color:#111}
+    .hint{font-size:0.9rem;color:var(--muted);margin-top:6px}
+    .mini-list{margin-top:8px}
+    .mini-item{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+    .score{font-weight:700}
+    .result{margin-top:12px;padding:10px;border-radius:8px;background:#f8fafc}
+    footer{margin-top:18px;font-size:0.9rem;color:var(--muted)}
+    @media(max-width:720px){.row{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <svg width="36" height="36" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 2l3 6 6 .5-4.5 4 1.5 6L12 15 5 19.5 6.5 13 2 9.5 8 9 12 2z" fill="#1e90ff"/></svg>
+      <h1>Life Goal Setting — ตั้งเป้าชีวิต (1 ปี)</h1>
+    </header>
+
+    <div class="card" id="formCard">
+      <form id="goalForm">
+        <section>
+          <label>1) เป้าหมายหลักของฉันภายใน 1 ปีคือ:</label>
+          <textarea id="bigGoal" rows="3" placeholder="เช่น อยากเรียนภาษาอังกฤษให้ได้ 500 คำ"></textarea>
+          <div class="hint">เขียนคำพูดว่า “อีก 1 ปี ฉันอยากทำอะไรสำเร็จ”</div>
+        </section>
+
+        <section style="margin-top:12px">
+          <label>2) แบ่งเป้าหมายใหญ่เป็นเป้าหมายเล็ก (Mini Goals)</label>
+          <div class="hint">ตัวอย่าง: เดือนนี้เรียน 50 คำ / สัปดาห์นี้เรียน 10 คำ</div>
+          <div id="miniContainer" class="mini-list">
+            <!-- mini items injected here -->
+          </div>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <input id="miniText" type="text" placeholder="เช่น เดือนนี้เรียน 50 คำ" />
+            <button type="button" id="addMini">เพิ่ม</button>
+          </div>
+        </section>
+
+        <section style="margin-top:12px">
+          <label>3) ติดตามผลและปรับแผน (บันทึกรายเดือน)</label>
+          <div class="row">
+            <div>
+              <label>เดือน (ตัวอย่าง: 2025-09)</label>
+              <input id="month" type="text" placeholder="YYYY-MM" />
+            </div>
+            <div>
+              <label>เดือนนี้สำเร็จหรือไม่</label>
+              <select id="achieved">
+                <option value="">-- เลือก --</option>
+                <option value="true">ใช่</option>
+                <option value="false">ไม่ใช่</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="margin-top:8px">
+            <label>ถ้าไม่สำเร็จ ฉันจะปรับแผนโดย:</label>
+            <textarea id="adjustPlan" rows="2" placeholder="เช่น ลดเป้าหมายต่อสัปดาห์เป็น 8 คำ เพิ่มเวลาฝึก 15 นาที/วัน"></textarea>
+          </div>
+
+          <div style="margin-top:8px">
+            <label>คะแนนเชิงบวก (0-100)</label>
+            <input id="score" type="text" placeholder="เช่น 78" />
+            <div class="hint">ระบบจะให้คำแนะนำตามช่วงคะแนน</div>
+          </div>
+
+        </section>
+
+        <div class="actions">
+          <button type="button" id="saveBtn">บันทึกไปยัง Google Sheets</button>
+          <button type="button" class="secondary" id="saveLocal">บันทึกสำรอง (Local)</button>
+          <button type="button" class="secondary" id="loadLocal">โหลดจากสำรอง</button>
+          <div id="status" style="margin-left:12px;color:var(--muted)"></div>
+        </div>
+
+        <div id="advice" class="result" style="display:none"></div>
+
+      </form>
+    </div>
+
+    <footer>
+      คำแนะนำ: นำไฟล์นี้เป็น index.html แล้ววางใน GitHub Pages (หรือโฟลเดอร์บนเว็บ). ก่อนส่งข้อมูลไปยัง Google Sheets ให้กรอก URL ของ Google Apps Script web app ลงในตัวแปร GAS_WEBAPP_URL ในโค้ดด้านล่าง.
+    </footer>
+  </div>
+
+  <script>
+    // === CONFIG: ใส่ URL ของ Google Apps Script web app ที่คุณ deploy ===
+    const GAS_WEBAPP_URL = 'https://script.google.com/macros/s/AKfycbwPtBE1blhwSzHytCi5i9bP0xOK_o16rYI3SXOijFhc2dm3n-nHLil1ORrVSZoQYstE/exec';
+
+    // Helpers
+    const $ = id => document.getElementById(id);
+    const miniContainer = $('miniContainer');
+    const miniText = $('miniText');
+
+    // Load saved mini goals from localStorage
+    let miniGoals = JSON.parse(localStorage.getItem('miniGoals')||'[]');
+    function renderMini(){
+      miniContainer.innerHTML = '';
+      miniGoals.forEach((m,i)=>{
+        const div = document.createElement('div');
+        div.className = 'mini-item';
+        div.innerHTML = `<div style="flex:1">${escapeHtml(m)}</div><button type="button" data-i="${i}">ลบ</button>`;
+        miniContainer.appendChild(div);
+      });
+    }
+    miniContainer.addEventListener('click', e=>{
+      if(e.target.tagName==='BUTTON'){
+        const i = +e.target.dataset.i; miniGoals.splice(i,1); saveLocalMini(); renderMini();
+      }
+    });
+    function saveLocalMini(){ localStorage.setItem('miniGoals', JSON.stringify(miniGoals)); }
+    $('addMini').addEventListener('click', ()=>{
+      const v = miniText.value.trim(); if(!v) return; miniGoals.push(v); miniText.value=''; saveLocalMini(); renderMini();
+    });
+    renderMini();
+
+    // Escape HTML
+    function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c])}
+
+    // Score advice
+    function scoreAdvice(n){
+      if(n>=80) return 'เยี่ยมมาก! คุณกำลังเดินตามแผนได้ดี ลองให้รางวัลเล็ก ๆ กับตัวเองดูนะ';
+      if(n>=50) return 'คุณทำได้ดี ลองปรับแผนเล็กน้อยเพื่อให้ทำต่อเนื่องมากขึ้น';
+      return 'อย่าท้อใจ การวางเป้าหมายใหม่และปรับตามสถานการณ์เป็นเรื่องปกติ คุณยังเริ่มใหม่ได้เสมอ';
+    }
+
+    // Submit / save
+    $('saveBtn').addEventListener('click', async ()=>{
+      const payload = collectForm();
+      if(!payload.bigGoal){ showStatus('กรุณากรอกเป้าหมายหลัก'); return; }
+      showStatus('กำลังส่ง...');
+      // If GAS URL not filled, warn and save to local only
+      if(!GAS_WEBAPP_URL || GAS_WEBAPP_URL.includes('REPLACE_WITH')){
+        showStatus('ยังไม่ได้ตั้งค่า GAS_WEBAPP_URL — บันทึกเฉพาะในเครื่องเท่านั้น');
+        localSaveData(payload);
+        showAdvice(payload.score);
+        return;
+      }
+      try{
+        const res = await fetch(GAS_WEBAPP_URL, {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const txt = await res.text();
+        showStatus('ส่งเรียบร้อย — ' + (res.ok? 'OK':'Error') + '\n' + txt);
+        localSaveData(payload);
+        showAdvice(payload.score);
+      }catch(err){
+        showStatus('การเชื่อมต่อล้มเหลว — บันทึกเฉพาะในเครื่อง');
+        localSaveData(payload);
+        showAdvice(payload.score);
+      }
+    });
+
+    function collectForm(){
+      return {
+        ts: new Date().toISOString(),
+        bigGoal: $('bigGoal').value.trim(),
+        miniGoals: miniGoals.slice(),
+        month: $('month').value.trim(),
+        achieved: $('achieved').value,
+        adjustPlan: $('adjustPlan').value.trim(),
+        score: (function(){const s=Number($('score').value); return isNaN(s)?'' : s;})()
+      };
+    }
+
+    function showStatus(s){ $('status').textContent = s; }
+    function showAdvice(score){
+      const box = $('advice');
+      const n = Number(score);
+      if(isNaN(n)){
+        box.style.display='block'; box.textContent = 'ยังไม่ได้ให้คะแนน — กรุณากรอกคะแนน (0-100) เพื่อรับคำแนะนำ'; return;
+      }
+      box.style.display='block'; box.innerHTML = `<div class="score">คะแนน: ${n}</div><div style="margin-top:6px">${scoreAdvice(n)}</div>`;
+    }
+
+    function localSaveData(payload){
+      const arr = JSON.parse(localStorage.getItem('goalRecords')||'[]');
+      arr.push(payload); localStorage.setItem('goalRecords', JSON.stringify(arr));
+      showStatus('บันทึกสำรองในเครื่องเรียบร้อย');
+    }
+
+    $('saveLocal').addEventListener('click', ()=>{
+      const payload = collectForm(); localSaveData(payload); showAdvice(payload.score);
+    });
+    $('loadLocal').addEventListener('click', ()=>{
+      const arr = JSON.parse(localStorage.getItem('goalRecords')||'[]');
+      if(!arr.length){ showStatus('ไม่มีข้อมูลสำรอง'); return; }
+      const last = arr[arr.length-1];
+      $('bigGoal').value = last.bigGoal || '';
+      miniGoals = last.miniGoals || [];
+      saveLocalMini(); renderMini();
+      $('month').value = last.month || '';
+      $('achieved').value = last.achieved || '';
+      $('adjustPlan').value = last.adjustPlan || '';
+      $('score').value = last.score || '';
+      showStatus('โหลดข้อมูลสำรองล่าสุดแล้ว');
+      showAdvice(last.score);
+    });
+
+  </script>
+
+  <!--
+    === Google Apps Script (Server side) ===
+    สร้างไฟล์ Google Apps Script ใหม่ (Apps Script project) แล้ววางโค้ดด้านล่างไว้ในไฟล์ Code.gs
+    จากนั้นกด Deploy -> New deployment -> Select type: Web app ->
+    - Execute as: Me
+    - Who has access: Anyone (หรือ Anyone with Google account) ขึ้นกับความต้องการ
+    คัดลอก URL ของ web app แล้วนำมาใส่ในตัวแปร GAS_WEBAPP_URL ด้านบน
+
+    // ---------- BEGIN GAS SAMPLE ----------
+
+    function doPost(e){
+      try{
+        var raw = e.postData.contents;
+        var data = JSON.parse(raw);
+        var ss = SpreadsheetApp.openById('REPLACE_WITH_YOUR_SHEET_ID');
+        var sheet = ss.getSheetByName('Sheet1');
+        if(!sheet) sheet = ss.insertSheet('Sheet1');
+        // หัวคอลัมน์ (ถ้ายังไม่มี)
+        if(sheet.getLastRow()==0){
+          sheet.appendRow(['timestamp','bigGoal','miniGoals','month','achieved','adjustPlan','score']);
+        }
+        sheet.appendRow([
+          data.ts || new Date().toISOString(),
+          data.bigGoal || '',
+          (data.miniGoals || []).join(' | '),
+          data.month || '',
+          data.achieved || '',
+          data.adjustPlan || '',
+          data.score || ''
+        ]);
+        return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
+      }catch(err){
+        return ContentService.createTextOutput(JSON.stringify({status:'error',message:err.message})).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
+
+    // ---------- END GAS SAMPLE ----------
+  -->
+</body>
+</html>
