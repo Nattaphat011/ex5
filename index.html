@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>กิจกรรมที่ 5</title>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-kKTXQp3+xM7lHGjaH0XYonPcTq7GpQ1Icrsw1uGzD9+y/6u5Lq2IoI7nM9xZyV1gV1t4fM+UqD1jFA6W+FvOA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<title>Life Goal Setting</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
   body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg,#6a11cb,#2575fc); margin:0; padding:20px; color:#333; }
@@ -23,7 +25,7 @@
   .success { color:green; }
   .error { color:red; }
   input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-  
+
   /* Responsive */
   @media (max-width:600px){
     .row { flex-direction:column; }
@@ -31,37 +33,35 @@
 </style>
 </head>
 <body>
+
 <div class="container">
-  <h1>Life Goal Setting</h1>
+  <h1><i class="fa-solid fa-bullseye"></i> Life Goal Setting</h1>
 
-  <h2>ตั้งค่า Google Sheet</h2>
-  <input type="text" id="gasUrl" placeholder="วาง Web App URL ของ GAS ที่นี่">
-  <button type="button" onclick="testGas()">ทดสอบการเชื่อมต่อ GAS</button>
-
-  <h2>เป้าหมายใหญ่ของฉันใน 1 ปี</h2>
+  <h2><i class="fa-solid fa-flag-checkered"></i> เป้าหมายใหญ่ของฉันใน 1 ปี</h2>
   <textarea id="bigGoal" placeholder="เช่น: อยากเรียนภาษาอังกฤษให้ได้ 500 คำ"></textarea>
 
-  <h2>เป้าหมายย่อย</h2>
+  <h2><i class="fa-solid fa-list-check"></i> เป้าหมายย่อย</h2>
   <input type="text" id="miniInput" placeholder="พิมพ์เป้าหมายย่อยแล้วกดเพิ่ม">
-  <button type="button" onclick="addMiniGoal()">เพิ่มเป้าหมายย่อย</button>
+  <button type="button" onclick="addMiniGoal()"><i class="fa-solid fa-plus"></i> เพิ่มเป้าหมายย่อย</button>
   <div id="miniList"></div>
 
-  <h2>จำนวนเดือนติดตาม</h2>
+  <h2><i class="fa-solid fa-calendar-days"></i> จำนวนเดือนติดตาม</h2>
   <input type="number" id="numMonths" value="12" min="1" max="24" onchange="renderMonths()">
   <div id="monthsContainer"></div>
 
-  <h2>คะแนนและการปรับแผน</h2>
+  <h2><i class="fa-solid fa-star"></i> คะแนนและการปรับแผน</h2>
   <input type="number" id="overallScore" placeholder="กรอกคะแนนรวม 0-100">
   <input type="text" id="adjustPlan" placeholder="ถ้าต้องปรับแผน ทำอย่างไร">
 
-  <button type="button" onclick="submitForm()">บันทึกและส่งข้อมูล</button>
+  <button type="button" onclick="submitForm()"><i class="fa-solid fa-paper-plane"></i> บันทึกและส่งข้อมูล</button>
 
   <div id="status" class="muted"></div>
   <div id="advice"></div>
 </div>
 
 <script>
-let GAS_WEB_APP_URL = '';
+/* --- GAS Web App URL ฝังไว้ --- */
+const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzcNbbU2NjNP_kh5tODlxm3N16qDiUXmBsQN59WN3j7DKn_WdTRBTTKI1ay2fzjtH0R/exec"; // <-- แก้เป็น URL ของคุณ
 
 document.addEventListener('DOMContentLoaded', () => {
   renderMonths();
@@ -69,8 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
   if (saved) {
     try {
       const s = JSON.parse(saved);
-      document.getElementById('gasUrl').value = s.gasUrl || '';
-      GAS_WEB_APP_URL = s.gasUrl || '';
       const big = s.bigGoal || '';
       if (big) document.getElementById('bigGoal').value = big;
       (s.miniGoals || []).forEach(m => { document.getElementById('miniInput').value = m; addMiniGoal(); });
@@ -100,7 +98,7 @@ function renderMonths() {
     div.className = 'card';
     div.innerHTML = `
       <strong>เดือนที่ ${i}</strong>
-      <div class="row" style="margin-top:6px">
+      <div class="row">
         <div class="col">
           <label>สำเร็จหรือไม่</label>
           <select id="month-complete-${i}"><option value="yes">ใช่</option><option value="no">ไม่ใช่</option></select>
@@ -126,7 +124,7 @@ function addMiniGoal() {
   const item = document.createElement('div'); 
   item.className = 'mini-item';
   item.innerHTML = `<strong>เป้าหมายย่อย ${idx}:</strong> <span class="muted">${escapeHtml(val)}</span> 
-                    <button type="button" style="float:right" onclick="this.parentElement.remove();">ลบ</button>`;
+                    <button type="button" onclick="this.parentElement.remove();"><i class="fa-solid fa-trash"></i></button>`;
   list.appendChild(item);
   document.getElementById('miniInput').value = '';
 }
@@ -156,39 +154,26 @@ function collectForm() {
 async function submitForm(e) {
   e?.preventDefault();
   const data = collectForm();
-
-  // Save local settings
-  const settings = {
-    gasUrl: document.getElementById('gasUrl').value.trim(),
+  localStorage.setItem('lgs-settings', JSON.stringify({
     bigGoal: data.bigGoal,
     miniGoals: data.miniGoals,
     monthsCount: document.getElementById('numMonths').value,
     monthData: data.months
-  };
-  localStorage.setItem('lgs-settings', JSON.stringify(settings));
-  GAS_WEB_APP_URL = settings.gasUrl;
+  }));
 
   document.getElementById('advice').innerHTML = generateAdvice(data.overallScore);
 
-  if(GAS_WEB_APP_URL){
-    showStatus('กำลังส่งข้อมูลไปยัง GAS...');
-    try {
-      const response = await fetch(GAS_WEB_APP_URL, {
-        method:'POST', mode:'cors',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(data)
-      });
-      const respJson = await response.json();
-      showStatus('ส่งข้อมูลเรียบร้อย', true);
-      console.log('GAS response:', respJson);
-    } catch(err){
-      console.error('GAS fetch error:', err);
-      showStatus('ส่งข้อมูลล้มเหลว (CORS/Permission) — บันทึกไว้ในเครื่องแทน', false, true);
-      saveLocal();
-    }
-  } else {
-    saveLocal();
-    showStatus('บันทึกไว้ที่เครื่อง (localStorage) แล้ว — ตั้งค่า GAS URL หากต้องการส่งขึ้น Google Sheets', true);
+  showStatus('กำลังส่งข้อมูลไปยัง GAS...');
+  try {
+    const response = await fetch(GAS_WEB_APP_URL, {
+      method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(data)
+    });
+    const respJson = await response.json();
+    showStatus('ส่งข้อมูลเรียบร้อย', true);
+    console.log('GAS response:', respJson);
+  } catch(err){
+    console.error('GAS fetch error:', err);
+    showStatus('ส่งข้อมูลล้มเหลว — บันทึกไว้ในเครื่องแทน', false, true);
   }
 }
 
@@ -196,27 +181,6 @@ function showStatus(msg, success=true, isError=false){
   const s = document.getElementById('status'); s.innerText=msg;
   s.className = isError?'error':'muted'; if(success) s.classList.add('success');
   setTimeout(()=>{ if(s) s.innerText=''; }, 6000);
-}
-
-function saveLocal(){
-  const data = collectForm();
-  const prev = JSON.parse(localStorage.getItem('lgs-submissions')||'[]');
-  prev.push(data);
-  localStorage.setItem('lgs-submissions', JSON.stringify(prev));
-  showStatus('บันทึกข้อมูลลง localStorage เรียบร้อย', true);
-}
-
-async function testGas(){
-  const url = document.getElementById('gasUrl').value.trim();
-  if(!url){ alert('โปรดวาง Web App URL ของ GAS ก่อน'); return; }
-  try{
-    const res = await fetch(url, {method:'GET', mode:'cors'});
-    const j = await res.json();
-    alert('เชื่อมต่อ GAS สำเร็จ: '+(j.message || JSON.stringify(j)));
-    document.getElementById('gasUrl').value = url; GAS_WEB_APP_URL = url;
-  } catch(e){
-    alert('เชื่อมต่อ GAS ไม่สำเร็จ — ตรวจสอบ CORS / Deploy เป็น Anyone (even anonymous)');
-  }
 }
 
 function generateAdvice(score){
@@ -228,6 +192,7 @@ function generateAdvice(score){
 
 function escapeHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
 </script>
+
 
 
 
