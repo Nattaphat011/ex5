@@ -42,5 +42,20 @@
 
     <button type="submit">บันทึกเป้าหมาย</button>
   </form>
+  <div id="result">
+    <h2>ขอบคุณที่ตั้งเป้าหมาย!</h2>
+    <p>คุณได้บันทึกเป้าหมายของคุณเรียบร้อยแล้ว</p>
+  </div>
+  <script>
+    // JavaScript to handle form submission and show result
+    const form = document.querySelector('form');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      resultDiv.style.display = 'block';
+      form.reset();
+    });
+  </script>
 </body>
 </html>
