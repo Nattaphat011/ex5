@@ -144,16 +144,13 @@
   /* รูปภาพหัวข้อหรือรูปที่ต้องการสไตล์เดียวกัน */
 img.goal-img {
   display: block;
-  margin: 0 auto 20px;       /* จัดกึ่งกลางและเว้นล่าง */
-  max-width: 500px;          /* กำหนดความกว้างสูงสุด */
-  height: auto;              /* ปรับสูงอัตโนมัติ */
-  border-radius: 15px;       /* มุมโค้งมน */
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* เงา */
-  object-fit: cover;         /* จัดการการครอบภาพ */
-  background: white;         /* พื้นหลังขาว */
-  padding: 10px;             /* เว้นขอบภาพ */
-  transition: transform 0.3s ease; /* เอฟเฟกต์เมื่อโฮเวอร์ */
-  justify-content: center; /* จัดกึ่งกลาง */
+  margin: 0 auto 20px;
+  width: 100%;          /* ให้กินความกว้างเต็ม container */
+  max-width: 200px;     /* แต่ไม่เกิน 500px บนจอใหญ่ */
+  height: auto;         /* คงอัตราส่วน */
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  object-fit: cover;
 }
   </style>
 </head>
