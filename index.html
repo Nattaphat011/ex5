@@ -151,13 +151,58 @@ img.goal-img {
   border-radius: 15px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
   object-fit: cover;
+  cursor: zoom-in; /* เปลี่ยนเคอร์เซอร์เป็นสัญลักษณ์ขยาย */
+}
+
+/* สไตล์สำหรับ modal รูปภาพ */
+.img-modal {
+  display: none; /* ซ่อน modal เริ่มต้น */
+  position: fixed;
+  z-index: 1000;
+  padding-top: 60px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgba(0,0,0,0.85);
+}
+
+.img-modal-content {
+  margin: auto;
+  display: block;
+  max-width: 90%;
+  max-height: 90%;
+  border-radius: 15px;
+  box-shadow: 0 0 20px rgba(255,255,255,0.3);
+}
+
+.img-close {
+  position: absolute;
+  top: 20px;
+  right: 30px;
+  color: #fff;
+  font-size: 40px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.img-close:hover {
+  color: #ff6b6b;
 }
   </style>
 </head>
 <body>
-  <img src="images/หัวข้อ5.png" 
+ <img src="images/หัวข้อ5.png" 
      alt="การตั้งเป้าหมายชีวิต" 
-     class="goal-img">
+     class="goal-img"
+     id="myImage">
+
+     <div id="imgModal" class="img-modal">
+  <span class="img-close">&times;</span>
+  <img class="img-modal-content" id="imgModalContent">
+  <div id="imgCaption"></div>
+</div>
+
   <h1>Life Goal Setting</h1>
   <h2>การตั้งเป้าหมายชีวิต</h2>
   <h4>คือ ฉันอยากให้คุณตั้งเป้าหมายในอนาคตของคุณว่า ปัจจุบันคุณจะทำอย่างไร เพื่อให้เป็นการส่งเสริมคุณให้เป็นคนที่ดีขึ้นในอนาคต</h4>
