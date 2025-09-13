@@ -13,11 +13,18 @@
 
   body {
     font-family: "Kanit", sans-serif;
-    background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+    background: linear-gradient(-45deg, #ffe6f0, #fff7e6, #e6f7ff, #f5e6ff);
+    background-size: 400% 400%;
+    animation: pastelShift 15s ease infinite;
     color: #2c3e50;
     margin: 0;
     padding: 30px;
   }
+  @keyframes pastelShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
 
   h1, h2 {
     text-align: center;
@@ -54,6 +61,14 @@
     border-radius: 20px;
     box-shadow: 0 8px 30px rgba(0,0,0,0.15);
   }
+  form, h1, h2, h4, p {
+  animation: fadePop 1.2s ease forwards;
+  opacity: 0;
+}
+@keyframes fadePop {
+  from { opacity: 0; transform: translateY(25px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
 
   label {
     display: block;
@@ -104,6 +119,38 @@
     outline: none;
     box-shadow: 0 0 0 3px rgba(255,107,107,0.4);
   }
+
+.progress-container {
+  width: 100%;
+  background: #f3f4f6;
+  border-radius: 15px;
+  margin-top: 12px;
+  height: 18px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+}
+.progress-bar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#fbcfe8,#a5f3fc,#c4b5fd,#fde68a);
+  border-radius: 15px;
+  transition: width 0.6s ease-in-out;
+}
+
+/* ---------- Sparkle Confetti ---------- */
+.confetti {
+  position: fixed;
+  top: -10px;
+  font-size: 18px;
+  opacity: 0.8;
+  animation: fall 3s linear forwards;
+}
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+    opacity: 0;
+  }
+}
 
   /* ---------- Responsive ---------- */
   @media (max-width: 768px) {
@@ -285,6 +332,37 @@ em {
       modal.style.display = "none";
     }
   }
+
+
+  // ---------- Progress Bar Update ----------
+const progressInput = document.querySelector('input[name="progress_score"]');
+const progressContainer = document.createElement('div');
+progressContainer.className = 'progress-container';
+const progressBar = document.createElement('div');
+progressBar.className = 'progress-bar';
+progressContainer.appendChild(progressBar);
+progressInput.insertAdjacentElement('afterend', progressContainer);
+
+progressInput.addEventListener('input', () => {
+  const val = Math.min(Math.max(progressInput.value,0),100);
+  progressBar.style.width = val + "%";
+});
+
+// ---------- Confetti Effect ----------
+document.querySelector("form").addEventListener("submit", (e) => {
+  setTimeout(() => {
+    for (let i = 0; i < 20; i++) {
+      const conf = document.createElement("div");
+      conf.className = "confetti";
+      conf.textContent = ["✨","🌸","💖","🌈","⭐"][Math.floor(Math.random()*5)];
+      conf.style.left = Math.random()*100 + "vw";
+      conf.style.animationDuration = (2 + Math.random()*2) + "s";
+      document.body.appendChild(conf);
+      setTimeout(()=>conf.remove(), 3000);
+    }
+  }, 300); // หลังส่งฟอร์ม
+});
+
 </script>
 
 </body>
