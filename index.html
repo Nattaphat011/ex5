@@ -13,12 +13,12 @@
 
   body {
     font-family: "Kanit", sans-serif;
-    background: linear-gradient(-45deg, #ffe6f0, #fff7e6, #e6f7ff, #f5e6ff);
+    background: linear-gradient(135deg, #ff855d, #ff86b3);
     background-size: 400% 400%;
     animation: pastelShift 15s ease infinite;
     color: #2c3e50;
     margin: 0;
-    padding: 30px;
+    padding: 0;
   }
   @keyframes pastelShift {
   0% { background-position: 0% 50%; }
@@ -309,6 +309,12 @@ em {
     <button type="submit">บันทึกเป้าหมาย</button>
   </form>
 
+  <!-- 🐰 มาสคอต -->
+  <div class="mascot">
+    <div class="speech" id="speechBox">สู้ ๆ นะ 🌸</div>
+    <img src="https://cdn-icons-png.flaticon.com/512/616/616408.png" alt="mascot">
+  </div>
+
   <script>
   const modal = document.getElementById('imgModal');
   const img = document.getElementById('myImage');
@@ -334,35 +340,24 @@ em {
   }
 
 
-  // ---------- Progress Bar Update ----------
-const progressInput = document.querySelector('input[name="progress_score"]');
-const progressContainer = document.createElement('div');
-progressContainer.className = 'progress-container';
-const progressBar = document.createElement('div');
-progressBar.className = 'progress-bar';
-progressContainer.appendChild(progressBar);
-progressInput.insertAdjacentElement('afterend', progressContainer);
+  const messages = [
+    "สู้ ๆ นะ 🌸",
+    "ทำได้ดีมากเลย ✨",
+    "อย่าลืมพักผ่อนด้วยนะ 💖",
+    "เก่งที่สุดเลย 🌷",
+    "ก้าวเล็ก ๆ ก็นับว่าสำคัญนะ 🐰"
+  ];
 
-progressInput.addEventListener('input', () => {
-  const val = Math.min(Math.max(progressInput.value,0),100);
-  progressBar.style.width = val + "%";
-});
+  document.getElementById("submitBtn").addEventListener("click", () => {
+    const speechBox = document.getElementById("speechBox");
+    const randomMsg = messages[Math.floor(Math.random() * messages.length)];
+    speechBox.textContent = randomMsg;
+    speechBox.style.display = "block";
 
-// ---------- Confetti Effect ----------
-document.querySelector("form").addEventListener("submit", (e) => {
-  setTimeout(() => {
-    for (let i = 0; i < 20; i++) {
-      const conf = document.createElement("div");
-      conf.className = "confetti";
-      conf.textContent = ["✨","🌸","💖","🌈","⭐"][Math.floor(Math.random()*5)];
-      conf.style.left = Math.random()*100 + "vw";
-      conf.style.animationDuration = (2 + Math.random()*2) + "s";
-      document.body.appendChild(conf);
-      setTimeout(()=>conf.remove(), 3000);
-    }
-  }, 300); // หลังส่งฟอร์ม
-});
-
+    setTimeout(() => {
+      speechBox.style.display = "none";
+    }, 4000);
+  });
 </script>
 
 </body>
